@@ -2,6 +2,9 @@
 
 A Laravel application with Inertia and React.
 
+> [!TIP]
+> If you want to see an overview of the tech stack and files, check out the [developer overview](/DEVELOPER_OVERVIEW.md).
+
 ## Prerequisites
 
 > [!NOTE]
