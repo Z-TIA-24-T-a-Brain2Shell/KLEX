@@ -34,8 +34,12 @@ Before running the application, ensure you have the following installed:
    ```bash
    php artisan migrate
    ```
+5. **Seed the Database**
+   ```bash
+   php artisan db:seed
+   ```
 
-5. **Start the development server:**
+6**Start the development server:**
    ```bash
    composer dev
    ```
