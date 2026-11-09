@@ -14,7 +14,7 @@ This document provides a quick reference for the key areas of the application �
 | Styling | Tailwind CSS + shadcn/ui components | [Tailwind Docs](https://tailwindcss.com/docs) · [shadcn/ui](https://ui.shadcn.com/docs) |
 | Build Tool | Vite | [Vite Docs](https://vite.dev/guide/) |
 | Database | PostgreSQL 18 | [PostgreSQL Docs](https://www.postgresql.org/docs/18/) |
-| Route Binding | Laravel Wayfinder (TypeScript route helpers) | [Wayfinder Docs](https://wayfinder.laravel.com/docs/) |
+| Route Binding | Laravel Wayfinder (TypeScript route helpers) | [Wayfinder Docs](https://github.com/laravel/wayfinder) |
 | Testing | Pest | [Pest Docs](https://pestphp.com/docs/) |
 
 ---
@@ -216,13 +216,12 @@ composer dev
 ### Laravel Ecosystem
 - [Laravel 13 Documentation](https://laravel.com/docs/13.x) — Main framework documentation
 - [Laravel Fortify](https://laravel.com/docs/13.x/fortify) — Authentication scaffolding (2FA, passkeys, email verification)
-- [Laravel Wayfinder](https://wayfinder.laravel.com/docs/) — TypeScript route helpers
+- [Laravel Wayfinder](https://github.com/laravel/wayfinder) — TypeScript route helpers
 - [Laravel Pint](https://laravel.com/docs/13.x/pint) — Code style fixer
-- [Laravel Pao](https://laravel.com/docs/13.x/pao) — Local development server
 
 ### Frontend
 - [Inertia.js v3](https://inertiajs.com/) — SPA without an API
-- [Inertia.js React Adapter](https://inertiajs.com/client-side-adapters) — React-specific Inertia features
+- [Inertia.js React Adapter](https://inertiajs.com/docs/v3/installation/client-side-setup#using-axios) — React-specific Inertia features
 - [Tailwind CSS](https://tailwindcss.com/docs) — Utility-first CSS framework
 - [shadcn/ui](https://ui.shadcn.com/docs) — Reusable UI components
 - [Vite](https://vite.dev/guide/) — Frontend build tool

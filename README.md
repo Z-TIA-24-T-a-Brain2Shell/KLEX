@@ -50,7 +50,7 @@ Before running the application, ensure you have the following installed:
    composer dev
    ```
 
-This will start the Laravel Pao development server, which runs both the backend and the Vite frontend dev server concurrently. The application will be available at `http://localhost:8000`.
+This will start the Laravel development server, which runs both the backend and the Vite frontend dev server concurrently. The application will be available at `http://localhost:8000`.
 
 ## Docker Compose
 
