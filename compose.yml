@@ -1,0 +1,114 @@
+services:
+  # Nginx web server
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www/html
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - klex
+
+  # Laravel application (PHP-FPM) — production
+  app:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    env_file:
+      - .env.docker
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      klex:
+        aliases:
+          - app-backend
+    profiles:
+      - prod
+
+  # Queue worker — production
+  queue:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    env_file:
+      - .env.docker
+    entrypoint: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - klex
+
+  # Development app container with fresh migrations and seeding
+  app-dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    env_file:
+      - .env.docker
+    entrypoint: ["/usr/local/bin/entrypoint-dev.sh"]
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      klex:
+        aliases:
+          - app-backend
+    profiles:
+      - dev
+
+  # Frontend dev server (Vite)
+  npm:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    command: npm run dev
+    ports:
+      - "5173:5173"
+    depends_on:
+      - app-dev
+    networks:
+      - klex
+    profiles:
+      - dev
+
+  # PostgreSQL database
+  db:
+    image: postgres:18
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: klex
+      POSTGRES_USER: klex
+      POSTGRES_PASSWORD: secret
+    volumes:
+      - pgsql:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - klex
+
+volumes:
+  pgsql:
+
+networks:
+  klex:
+    driver: bridge

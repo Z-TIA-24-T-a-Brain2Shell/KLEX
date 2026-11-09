@@ -1,0 +1,12 @@
+/vendor
+/node_modules
+/.idea
+/.vscode
+*.log
+.env
+.env.backup
+.phpunit.result.cache
+.idea
+.DS_Store
+Thumbs.db
+.docker
