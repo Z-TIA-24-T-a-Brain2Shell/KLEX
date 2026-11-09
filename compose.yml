@@ -1,119 +1,123 @@
 x-app-base: &app-base
-  build:
-    context: .
-    dockerfile: docker/Dockerfile
-  working_dir: /var/www/html
-  volumes:
-    - .:/var/www/html
-  env_file:
-    - .env.docker
-  depends_on:
-    db:
-      condition: service_healthy
-  networks:
-    klex:
-      aliases:
-        - app-backend
-  healthcheck:
-    test: ["CMD-SHELL", "curl -f http://nginx/up || exit 1"]
-    interval: 5s
-    timeout: 5s
-    retries: 5
-    start_period: 10s
-
-services:
-  # Nginx web server
-  nginx:
-    image: nginx:alpine
-    ports:
-      - "8000:80"
-    volumes:
-      - .:/var/www/html
-      - ./docker/nginx:/etc/nginx/conf.d
-    networks:
-      - klex
-
-  # Laravel application (PHP-FPM) — production
-  app:
-    <<: *app-base
-    entrypoint: ["/usr/local/bin/entrypoint.sh"]
-    profiles:
-      - prod
-
-  # Development app container with fresh migrations and seeding
-  app-dev:
-    <<: *app-base
-    entrypoint: ["/usr/local/bin/entrypoint-dev.sh"]
-    profiles:
-      - dev
-
-  # Queue worker
-  queue:
-    <<: *app-base
-    entrypoint: ["/usr/local/bin/entrypoint-queue.sh"]
-    networks:
-      - klex
-    profiles:
-      - prod
-    depends_on:
-      app:
-        condition: service_healthy
-    healthcheck: {}
-
-  # Queue worker
-  queue-dev:
-    <<: *app-base
-    entrypoint: ["/usr/local/bin/entrypoint-queue.sh"]
-    networks:
-      - klex
-    profiles:
-      - dev
-    depends_on:
-      app-dev:
-        condition: service_healthy
-    healthcheck: {}
-
-  # Frontend dev server (Vite)
-  npm:
     build:
-      context: .
-      dockerfile: docker/Dockerfile
+        context: .
+        dockerfile: docker/Dockerfile
     working_dir: /var/www/html
     volumes:
-      - .:/var/www/html
-    command: npm run dev
-    ports:
-      - "5173:5173"
+        - .:/var/www/html
+    env_file:
+        - .env.docker
     depends_on:
-      - app-dev
+        db:
+            condition: service_healthy
     networks:
-      - klex
-    profiles:
-      - dev
-
-  # PostgreSQL database
-  db:
-    image: postgres:18
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: klex
-      POSTGRES_USER: klex
-      POSTGRES_PASSWORD: secret
-    volumes:
-      - pgsql:/var/lib/postgresql
+        klex:
+            aliases:
+                - app-backend
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    networks:
-      - klex
+        test: ['CMD-SHELL', 'curl -f http://nginx/up || exit 1']
+        interval: 5s
+        timeout: 5s
+        retries: 5
+        start_period: 10s
+
+services:
+    # Nginx web server
+    nginx:
+        image: nginx:alpine
+        ports:
+            - '8000:80'
+        volumes:
+            - .:/var/www/html
+            - ./docker/nginx:/etc/nginx/conf.d
+        networks:
+            - klex
+
+    # Laravel application (PHP-FPM) — production
+    app:
+        <<: *app-base
+        entrypoint: ['/usr/local/bin/entrypoint.sh']
+        profiles:
+            - prod
+
+    # Development app container with fresh migrations and seeding
+    app-dev:
+        <<: *app-base
+        entrypoint: ['/usr/local/bin/entrypoint-dev.sh']
+        profiles:
+            - dev
+
+    # Queue worker
+    queue:
+        <<: *app-base
+        entrypoint: ['/usr/local/bin/entrypoint-queue.sh']
+        networks:
+            - klex
+        profiles:
+            - prod
+        depends_on:
+            app:
+                condition: service_healthy
+        healthcheck: {}
+
+    # Queue worker
+    queue-dev:
+        <<: *app-base
+        entrypoint: ['/usr/local/bin/entrypoint-queue.sh']
+        networks:
+            - klex
+        profiles:
+            - dev
+        depends_on:
+            app-dev:
+                condition: service_healthy
+        healthcheck: {}
+
+    # Frontend dev server (Vite)
+    npm:
+        build:
+            context: .
+            dockerfile: docker/Dockerfile
+        working_dir: /var/www/html
+        volumes:
+            - .:/var/www/html
+        command: npm run dev
+        ports:
+            - '5173:5173'
+        depends_on:
+            - app-dev
+        networks:
+            - klex
+        profiles:
+            - dev
+
+    # PostgreSQL database
+    db:
+        image: postgres:18
+        ports:
+            - '5432:5432'
+        environment:
+            POSTGRES_DB: klex
+            POSTGRES_USER: klex
+            POSTGRES_PASSWORD: secret
+        volumes:
+            - pgsql:/var/lib/postgresql
+        healthcheck:
+            test:
+                [
+                    'CMD-SHELL',
+                    'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}',
+                ]
+            interval: 5s
+            timeout: 5s
+            retries: 5
+            start_period: 10s
+        networks:
+            - klex
 
 volumes:
-  pgsql:
+    pgsql:
 
 networks:
-  klex:
-    driver: bridge
+    klex:
+        driver: bridge

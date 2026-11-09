@@ -21,34 +21,38 @@ Before running the application, ensure you have the following installed:
 ## Getting Started
 
 1. **Install PHP dependencies:**
-   ```bash
-   composer install
-   ```
+
+    ```bash
+    composer install
+    ```
 
 2. **Set up the environment:**
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
+
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
 
 3. **Install JavaScript dependencies:**
-   ```bash
-   npm install
-   ```
+
+    ```bash
+    npm install
+    ```
 
 4. **Run database migrations:**
-   ```bash
-   php artisan migrate
-   ```
+    ```bash
+    php artisan migrate
+    ```
 5. **Seed the Database**
-   ```bash
-   php artisan db:seed
-   ```
+    ```bash
+    php artisan db:seed
+    ```
 
 6**Start the development server:**
-   ```bash
-   composer dev
-   ```
+
+```bash
+composer dev
+```
 
 This will start the Laravel development server, which runs both the backend and the Vite frontend dev server concurrently. The application will be available at `http://localhost:8000`.
 
@@ -66,9 +70,9 @@ You can also run the application using Docker Compose, which includes the Larave
 For development, the application runs with fresh migrations and seeding on each startup, along with a Vite dev server for hot module replacement. The application key is automatically generated on first run.
 
 1. **Start the development services:**
-   ```bash
-   docker compose --profile dev up -d --build
-   ```
+    ```bash
+    docker compose --profile dev up -d --build
+    ```
 
 The application will be available at `http://localhost:8000`. The Vite dev server runs on port 5173 for HMR.
 
@@ -77,28 +81,29 @@ The application will be available at `http://localhost:8000`. The Vite dev serve
 For production-like environments, the application runs with standard migrations and a queue worker.
 
 1. **Start the production services:**
-   ```bash
-   docker compose --profile prod up -d --build
-   ```
+
+    ```bash
+    docker compose --profile prod up -d --build
+    ```
 
 2. **Generate an application key (first time only):**
-   ```bash
-   docker compose exec app php artisan key:generate
-   ```
+    ```bash
+    docker compose exec app php artisan key:generate
+    ```
 
 The application will be available at `http://localhost:8000`.
 
 ### Docker Services
 
-| Service | Profile | Description |
-|---------|---------|-------------|
-| `nginx` | Both | Nginx web server serving the application on port 8000 |
-| `app` | `prod` | PHP-FPM container running the Laravel application |
-| `app-dev` | `dev` | PHP-FPM container with fresh migrations and seeding |
-| `queue` | `prod` | Queue worker processing background jobs |
-| `queue-dev` | `dev` | Queue worker processing background jobs |
-| `npm` | `dev` | Vite dev server with hot module replacement |
-| `db` | Both | PostgreSQL 18 database |
+| Service     | Profile | Description                                           |
+| ----------- | ------- | ----------------------------------------------------- |
+| `nginx`     | Both    | Nginx web server serving the application on port 8000 |
+| `app`       | `prod`  | PHP-FPM container running the Laravel application     |
+| `app-dev`   | `dev`   | PHP-FPM container with fresh migrations and seeding   |
+| `queue`     | `prod`  | Queue worker processing background jobs               |
+| `queue-dev` | `dev`   | Queue worker processing background jobs               |
+| `npm`       | `dev`   | Vite dev server with hot module replacement           |
+| `db`        | Both    | PostgreSQL 18 database                                |
 
 ### Useful Commands
 
