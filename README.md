@@ -60,16 +60,11 @@ You can also run the application using Docker Compose, which includes the Larave
 
 ### Development Setup
 
-For development, the application runs with fresh migrations and seeding on each startup, along with a Vite dev server for hot module replacement.
+For development, the application runs with fresh migrations and seeding on each startup, along with a Vite dev server for hot module replacement. The application key is automatically generated on first run.
 
 1. **Start the development services:**
    ```bash
    docker compose --profile dev up -d --build
-   ```
-
-2. **Generate an application key (first time only):**
-   ```bash
-   docker compose exec app-dev php artisan key:generate
    ```
 
 The application will be available at `http://localhost:8000`. The Vite dev server runs on port 5173 for HMR.
@@ -98,6 +93,7 @@ The application will be available at `http://localhost:8000`.
 | `app` | `prod` | PHP-FPM container running the Laravel application |
 | `app-dev` | `dev` | PHP-FPM container with fresh migrations and seeding |
 | `queue` | `prod` | Queue worker processing background jobs |
+| `queue-dev` | `dev` | Queue worker processing background jobs |
 | `npm` | `dev` | Vite dev server with hot module replacement |
 | `db` | Both | PostgreSQL 18 database |
 
@@ -107,8 +103,9 @@ The application will be available at `http://localhost:8000`.
 # View all logs
 docker compose logs -f
 
-# View a specific service's logs
+# View logs for a specific service
 docker compose logs -f app
+docker compose logs -f queue
 
 # Stop all services
 docker compose down
@@ -117,5 +114,6 @@ docker compose down
 docker compose down -v
 
 # Restart a specific service
-docker compose restart queue
+docker compose --profile prod restart queue
+docker compose --profile dev restart queue-dev
 ```
