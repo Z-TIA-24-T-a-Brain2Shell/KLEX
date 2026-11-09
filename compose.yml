@@ -1,3 +1,26 @@
+x-app-base: &app-base
+  build:
+    context: .
+    dockerfile: docker/Dockerfile
+  working_dir: /var/www/html
+  volumes:
+    - .:/var/www/html
+  env_file:
+    - .env.docker
+  depends_on:
+    db:
+      condition: service_healthy
+  networks:
+    klex:
+      aliases:
+        - app-backend
+  healthcheck:
+    test: ["CMD-SHELL", "curl -f http://nginx/up || exit 1"]
+    interval: 5s
+    timeout: 5s
+    retries: 5
+    start_period: 10s
+
 services:
   # Nginx web server
   nginx:
@@ -12,61 +35,43 @@ services:
 
   # Laravel application (PHP-FPM) — production
   app:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    working_dir: /var/www/html
-    volumes:
-      - .:/var/www/html
-    env_file:
-      - .env.docker
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      klex:
-        aliases:
-          - app-backend
+    <<: *app-base
+    entrypoint: ["/usr/local/bin/entrypoint.sh"]
     profiles:
       - prod
 
-  # Queue worker — production
-  queue:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    working_dir: /var/www/html
-    volumes:
-      - .:/var/www/html
-    env_file:
-      - .env.docker
-    entrypoint: php artisan queue:work --sleep=3 --tries=3 --max-time=3600
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - klex
-
   # Development app container with fresh migrations and seeding
   app-dev:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-    working_dir: /var/www/html
-    volumes:
-      - .:/var/www/html
-    env_file:
-      - .env.docker
+    <<: *app-base
     entrypoint: ["/usr/local/bin/entrypoint-dev.sh"]
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      klex:
-        aliases:
-          - app-backend
     profiles:
       - dev
+
+  # Queue worker
+  queue:
+    <<: *app-base
+    entrypoint: ["/usr/local/bin/entrypoint-queue.sh"]
+    networks:
+      - klex
+    profiles:
+      - prod
+    depends_on:
+      app:
+        condition: service_healthy
+    healthcheck: {}
+
+  # Queue worker
+  queue-dev:
+    <<: *app-base
+    entrypoint: ["/usr/local/bin/entrypoint-queue.sh"]
+    networks:
+      - klex
+    profiles:
+      - dev
+    depends_on:
+      app-dev:
+        condition: service_healthy
+    healthcheck: {}
 
   # Frontend dev server (Vite)
   npm:

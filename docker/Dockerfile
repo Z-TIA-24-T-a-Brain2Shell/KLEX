@@ -32,7 +32,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_26.x | bash - \
 # Copy and make entrypoint scripts executable
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY docker/entrypoint-dev.sh /usr/local/bin/entrypoint-dev.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/entrypoint-dev.sh
+COPY docker/entrypoint-queue.sh /usr/local/bin/entrypoint-queue.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh /usr/local/bin/entrypoint-dev.sh /usr/local/bin/entrypoint-queue.sh
 
 # Expose port 9000 for PHP-FPM
 EXPOSE 9000
